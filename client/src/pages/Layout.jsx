@@ -1,8 +1,15 @@
 import React from 'react'
 import { Outlet } from "react-router-dom"
+import OnBoarding from './OnBoarding'
+import Sidebar from '../components/Sidebar'
 const Layout = () => {
     return (
-        <Outlet />
+        <div className='layout-container'>
+            <Sidebar />
+            <div className='flex-1 overflow-y-scroll'>
+                <Outlet />
+            </div>
+        </div>
     )
 }
 

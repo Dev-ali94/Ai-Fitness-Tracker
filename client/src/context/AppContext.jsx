@@ -27,19 +27,19 @@ export const AppProvider = ({ children }) => {
         }
         localStorage.setItem("token", data.jwt)
     }
-    const fetchUser = async (credentials) => {
-        const { data } = await mockApi.user.me(credentials)
+    const fetchUser = async (token) => {
+        const { data } = await mockApi.user.me()
         setUser({ ...data, token })
         if (data?.age && data?.weight && data?.goal) {
             setOnBoardingCompleted(true)
         }
         setIsUserFetched(true)
     }
-    const fetchFoodLog = async (credentials) => {
+    const fetchFoodLog = async () => {
         const { data } = await mockApi.foodLogs.list()
         setAllFoodLogs(data)
     }
-    const fetchActiviteLog = async (credentials) => {
+    const fetchActiviteLog = async () => {
         const { data } = await mockApi.activityLogs.list()
         setAllActivities(data)
     }

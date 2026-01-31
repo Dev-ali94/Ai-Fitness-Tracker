@@ -17,9 +17,19 @@ const Login = () => {
             naviagte("/")
         }
     }, [user, naviagte])
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        if (state === "Sign In") {
+            await login({ email, password })
+        } else {
+            await signup({ username, email, password })
+        }
+        setIsSubmitting(false);
+    }
     return (
         <div className='flex items-center justify-center pt-35'>
-            <form className='login-form '>
+            <form onSubmit={handleSubmit} className='login-form '>
                 <h2 className='text-3xl font-medium font-gray-900 dark:text-white'>{state === "Sign In" ? "Sign In" : "Sign Up"}</h2>
                 <p className='mt-2 text-sm text-gray-500/90 dark:text-gray-400'>{state === "Sign In" ? "Please enter email and password for login" : "Please enter your details to create account"}</p>
                 {state !== "Sign In" && (
@@ -35,7 +45,7 @@ const Login = () => {
                     <label className='font-medium text-sm text-gray-700 dark:text-gray-400'>Email</label>
                     <div className='relative mt-2'>
                         <MailIcon className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 size-4.5' />
-                        <input placeholder='Enter your Email' onChange={(e) => email(e.target.value)} value={email} className='login-input' type="email" />
+                        <input placeholder='Enter your Email' onChange={(e) => setEmail(e.target.value)} value={email} className='login-input' type="email" />
                     </div>
                 </div>
                 <div className='mt-4'>
@@ -47,7 +57,7 @@ const Login = () => {
                     </div>
                 </div>
 
-                <button type='button' className='login-button' disabled={isSubmitting}>
+                <button type='submit' className='login-button' disabled={isSubmitting}>
                     {isSubmitting ? "Signing In.... " : state === "Sign In" ? "Sign In" : "Sign Up"}
                 </button>
                 {state === "Sign In" ?

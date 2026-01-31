@@ -1,10 +1,14 @@
 import React, { useState } from 'react'
-import { Toaster } from "react-hot-toast"
-import { PersonStanding, ScaleIcon, User2Icon } from "lucide-react"
+import { Toaster, toast } from "react-hot-toast"
+import { ArrowLeft, ArrowRight, GoalIcon, PersonStanding, ScaleIcon, Target, User2Icon } from "lucide-react"
 import { useAppContext } from "../context/AppContext"
 import Input from "../components/ui/Input"
+import Button from '../components/ui/Button'
+import mockApi from '../assets/mockApi'
+import { ageRanges, goalOptions } from '../assets/assets'
+import Slider from '../components/ui/Slider'
 const OnBoarding = () => {
-    const [step, setStep] = useState(2);
+    const [step, setStep] = useState(3);
     const totalSteps = 3
     const { user, setOnBoardingCompleted, fetchUser } = useAppContext()
     const [formData, setFormData] = useState({
@@ -21,6 +25,52 @@ const OnBoarding = () => {
             ...formData,
             [field]: value
         })
+    }
+    const hanelNext = async () => {
+        if (step === 1) {
+            if (!formData.age || Number(formData.age) < 13 || Number(formData.age) > 120) {
+                return toast("Please enter a valid age between 13 and 120")
+            }
+        }
+        if (step < totalSteps) {
+            setStep(step + 1)
+        } else {
+            const userData = {
+                ...formData,
+                age: formData.age.toString(),
+                weight: formData.weight.toString(),
+                height: formData.height.toString(),
+                createdAt: new Date().toString(),
+
+            }
+            localStorage.setItem("fittrack_onboarding_data", JSON.stringify(userData))
+            await mockApi.user.update(user?.id, userData)
+            toast.success("Onboarding completed successfully")
+            setOnBoardingCompleted(true)
+            fetchUser(user?.token || "")
+
+        }
+
+    }
+    const handelOptionClick = (option) => {
+        const age = Number(formData.age)
+        const range = ageRanges.find((r) => age <= r.max) || ageRanges[ageRanges.length - 1]
+        let intake = range.maintain
+        let burn = range.burn
+        if (option.value === "lose") {
+            intake -= 400
+            burn += 100
+        } else if (option.value === "gain") {
+            intake += 500
+            burn -= 100
+        }
+        setFormData({
+            ...formData,
+            goal: option.value,
+            dailyCalorieIntake: intake,
+            dailyCalorieBurn: burn
+        })
+
     }
     return (
         <>
@@ -87,6 +137,58 @@ const OnBoarding = () => {
                             </div>
                         </div>
                     )}
+                    {step === 3 && (
+                        <div className='space-y-6 onboarding-wrapper'>
+                            <div className='flex items-center mb-8 gap-4'>
+                                <div className='size-12 rounded-xl bg-emerald-500 dark:bg-emerald-900/90
+                                border border-emerald-100 dark:border-emerald-800  flex items-center justify-center'>
+                                    <Target className='size-6 text-emerald-600 dark:text-emerald-400' />
+                                </div>
+                                <div>
+                                    <h2 className='text-xl font-semibold text-slate-900 dark:text-white'>What's your goal?</h2>
+                                    <p className='text-sm text-slate-500 dark:text-slate-400 '>We'll tailor your plan accordingly</p>
+                                </div>
+                            </div>
+                            {/*option*/}
+                            <div className="space-y-4 max-w-lg">
+                                {goalOptions.map((option) => (
+                                    <button key={option.value} onClick={() => handelOptionClick(option)} className={`onboarding-option-btn  ${formData.goal === option.value && "ring-2 ring-emerald-500 "}`}>
+                                        <span className='text-base text-slate-500 dark:text-slate-200'>{option.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                            <div className='border-t border-slate-300 dark:border-slate-700 my-6 max-w-lg' />
+                            {/*Daily Target*/}
+                            <div className='space-y-8 max-w-lg'>
+                                <h2 className='text-md font-medium text-slate-800 dark:text-white mb-4'>Daily Target</h2>
+                                <div className='space-y-4'>
+                                    <Slider label="Daliy Calories Burn" min={120} max={4000} step={50} value={formData.dailyCalorieIntake}
+                                        onChange={(v) => updateFields("dailyCalorieIntake", v)} unit='kcal' infoText="The total calories you need to consume in a day" />
+                                    <Slider label="Daliy Calorie Intake" min={100} max={2000} step={50} value={formData.dailyCalorieBurn}
+                                        onChange={(v) => updateFields("dailyCalorieBurn", v)} unit='kcal' infoText="The total calories you aim to burn in a day through exercises" />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+                {/*Navigation button*/}
+                <div className='p-6 pb-10 onboarding-wrapper'>
+                    <div className='flex gap-3 lg:justify-end'>
+                        {step > 1 && (
+                            <Button variant='secondary' onClick={() => setStep(step > 1 ? step - 1 : 1)} className='max-lg:flex-1 lg:px-10' >
+                                <span className='flex items-center justify-center gap-3'>
+                                    <ArrowLeft className='w-5 h-5' />
+                                    Back
+                                </span>
+                            </Button>
+                        )}
+                        <Button variant='primary' onClick={hanelNext} className='max-lg:flex-1 lg:px-10' >
+                            <span className='flex items-center justify-center gap-3'>
+                                {step === totalSteps ? 'Get Started' : 'Countinue'}
+                                <ArrowRight className='w-5 h-5' />
+                            </span>
+                        </Button>
+                    </div>
                 </div>
             </div >
         </>

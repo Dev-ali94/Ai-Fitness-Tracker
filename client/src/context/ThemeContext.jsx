@@ -11,11 +11,11 @@ export function ThemeProvider({ children }) {
         root.classList.add(theme)
         localStorage.setItem("theme", theme)
     }, [theme])
-    const toggleThem = () => {
+    const toggleTheme = () => {
         setTheme((prev) => (prev === "light" ? "dark" : "light"))
     }
     return (
-        <ThemeContext.Provider value={{ theme, toggleThem }}>
+        <ThemeContext.Provider value={{ theme, toggleTheme }}>
             {children}
         </ThemeContext.Provider>
     )

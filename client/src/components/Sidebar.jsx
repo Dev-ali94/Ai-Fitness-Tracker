@@ -9,7 +9,7 @@ const Sidebar = () => {
         { path: "/activity", label: "Activity", icon: ActivityIcon },
         { path: "/profile", label: "Profile", icon: UserIcon }
     ]
-    const { theme, toggleThem } = useTheme()
+    const { theme, toggleTheme } = useTheme()
     return (
         <nav className='hidden lg:flex flex-col w-64 bg-white dark:bg-slate-900 
         p-6 transition-colors duration-300 border-r border-slate-100 dark:border-slate-800'>
@@ -29,11 +29,21 @@ const Sidebar = () => {
                 ))}
             </div>
             <div className='mt-auto pt-6 border-t border-slate-100 dark:border-slate-800' >
-                <button onClick={toggleThem} className='flex items-center gap-3 px-4 py-2.5 w-full text-slate-500 
+                <button onClick={toggleTheme} className='flex items-center gap-3 px-4 py-2.5 w-full text-slate-500 
             dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200
             transition-colors duration-300 cursor-pointer'>
-                    {theme === "light" ? <MoonIcon className='size-5' /> : <SunIcon className='size-5' />}
-                    <span className='text-base'>{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
+                    {theme === "light" ? (
+                        <>
+                            <SunIcon className="size-5" />
+                            <span className="text-base">Light Mode</span>
+                        </>
+                    ) : (
+                        <>
+                            <MoonIcon className="size-5" />
+                            <span className="text-base">Dark Mode</span>
+                        </>
+                    )}
+
                 </button>
             </div>
         </nav>

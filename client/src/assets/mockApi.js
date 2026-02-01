@@ -103,8 +103,8 @@ const mockApi = {
                 name: data.name,
                 calories: data.calories,
                 mealType: data.mealType,
-                date: new Date().toString().split("T")[0],
-                createdAt: new Date().toString(),
+                date: new Date().toISOString().split("T")[0],
+                createdAt: new Date().toISOString(),
             };
             db.foodLogs.push(newEntry);
             saveDB(db);
@@ -133,8 +133,8 @@ const mockApi = {
                 name: data.name,
                 duration: data.duration,
                 calories: data.calories,
-                date: new Date().toString().split("T")[0],
-                createdAt: new Date().toString(),
+                date: new Date().toISOString().split("T")[0],
+                createdAt: new Date().toISOString(),
             };
             db.activityLogs.push(newEntry);
             saveDB(db);

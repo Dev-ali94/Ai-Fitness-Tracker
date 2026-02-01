@@ -1,5 +1,9 @@
 import { CoffeeIcon, CookieIcon, MoonIcon, SunIcon } from "lucide-react";
+import welcome_icon from "./welcome_icon.png"
 
+export const assets = {
+    welcome_icon
+}
 
 export const dummyUser = {
     id: "user_123",
@@ -22,8 +26,8 @@ export const dummyFoodLogs = [
         name: "Oatmeal with Blueberries",
         calories: 300,
         mealType: "breakfast",
-        date: new Date().toString().split(" ")[0],
-        createdAt: new Date().toString(),
+        date: new Date().toISOString().split("T")[0],
+        createdAt: new Date().toISOString(),
     },
     {
         id: "food_2",
@@ -31,8 +35,8 @@ export const dummyFoodLogs = [
         name: "Grilled Chicken Salad",
         calories: 450,
         mealType: "lunch",
-        date: new Date().toString().split("T")[0],
-        createdAt: new Date().toString(),
+        date: new Date().toISOString().split("T")[0],
+        createdAt: new Date().toISOString(),
     },
 ];
 
@@ -43,8 +47,8 @@ export const dummyActivityLogs = [
         name: "Morning Run",
         duration: 30,
         calories: 300,
-        date: new Date().toString().split("T")[0],
-        createdAt: new Date().toString(),
+        date: new Date().toISOString().split("T")[0],
+        createdAt: new Date().toISOString(),
     },
 ];
 

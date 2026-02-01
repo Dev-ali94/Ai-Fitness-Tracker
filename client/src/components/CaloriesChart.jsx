@@ -3,7 +3,7 @@ import { useAppContext } from '../context/AppContext';
 
 const CaloriesChart = () => {
 
-    const { allActivityLogs, allFoodLogs } = useAppContext();
+    const { allActivities, allFoodLogs } = useAppContext();
 
     const getData = () => {
         const data = [];
@@ -16,7 +16,7 @@ const CaloriesChart = () => {
             const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
 
             const dailyFood = allFoodLogs.filter(log => log.createdAt?.split('T')[0] === dateString);
-            const dailyActivity = allActivityLogs.filter(log => log.createdAt?.split('T')[0] === dateString);
+            const dailyActivity = allActivities.filter(log => log.createdAt?.split('T')[0] === dateString);
 
             const intake = dailyFood.reduce((sum, item) => sum + item.calories, 0);
             const burn = dailyActivity.reduce((sum, item) => sum + (item.calories || 0), 0);

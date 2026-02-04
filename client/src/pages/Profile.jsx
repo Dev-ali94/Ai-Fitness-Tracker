@@ -9,6 +9,7 @@ import toast, { } from "react-hot-toast"
 import { useTheme } from "../context/ThemeContext"
 import { goalLabels, goalOptions } from '../assets/assets'
 import mockApi from '../assets/mockApi'
+import api from '../config/api'
 const Profile = () => {
     const { user, allFoodLogs, allActivities, fetchUser, logout } = useAppContext()
     const { theme, toggleTheme } = useTheme()
@@ -28,8 +29,7 @@ const Profile = () => {
     }
     const handelSave = async () => {
         try {
-            const update = { ...formData, goal: formData.goal.toString() || "" }
-            await mockApi.user.update(user?.token || "", update)
+            await api.put(`/api/users/${user?.id}`, formData)
             await fetchUser(user?.token || "")
             setIsEditing(false)
             toast.success("Profile updated successfully")

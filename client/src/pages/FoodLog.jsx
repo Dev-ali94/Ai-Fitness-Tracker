@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
+import api from "../config/api"
+import { toast } from "react-hot-toast"
 import { useAppContext } from "../context/AppContext"
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
@@ -12,7 +14,7 @@ const FoodLog = () => {
     const { allFoodLogs, setAllFoodLogs } = useAppContext()
     const [entries, setEntries] = useState([])
     const [showForm, setShowForm] = useState(false)
-    const [formData, setFormData] = useState({ name: "", calories: 0, mealType: "" })
+    const [formData, setFormData] = useState({ name: "", calories: "", mealType: "" })
     const [loading, setLoading] = useState(false)
     const inputRef = useRef(null)
     const today = new Date().toISOString().split('T')[0]
@@ -37,26 +39,30 @@ const FoodLog = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        setLoading(true)
-        const { data } = await mockApi.foodLogs.create({ data: formData })
-        setAllFoodLogs((prev) => [...prev, data])
-        setFormData({ name: "", calories: 0, mealType: "" })
-        setShowForm(false)
-        setLoading(false)
+        if (!formData.name || !formData.calories || !formData.mealType) {
+            return toast.error("Please fill valid data")
+        }
+        try {
+            const { data } = await api.post("/api/food-logs", { data: formData })
+            setAllFoodLogs(prev => [...prev, data])
+            setFormData({ name: "", calories: 0, mealType: "" })
+            setShowForm(false)
+        } catch (error) {
+            console.log(error);
+            toast.error(error?.response?.data?.error?.message || error?.message)
+        }
     }
+
     const handleDelete = async (documentId) => {
         try {
             const confirm = window.confirm("Are you sure you want to delete this entry?")
             if (!confirm) return
-            await mockApi.foodLogs.delete(documentId)
+            await api.delete(`/api/food-logs/${documentId}`)
             setAllFoodLogs((prev) => prev.filter((entry) => entry.documentId !== documentId))
         } catch (error) {
             console.log(error);
+            toast.error(error?.response?.data?.error?.message || error?.message)
         }
-    }
-    const handelImageChange = async (e) => {
-        const file = e.target.files[0]
-        if (!file) return
     }
 
     useEffect(() => {
@@ -99,10 +105,6 @@ const FoodLog = () => {
                         <Button className='w-full' onClick={() => setShowForm(true)}>
                             <PlusIcon className='size-5' />
                             Add Food Entry
-                        </Button>
-                        <Button onChange={handelImageChange} className='w-full' onClick={() => (inputRef.current?.click())}>
-                            <SparkleIcon className='size-5' />
-                            Ai Food Snap
                         </Button>
                         <input type='file' ref={inputRef} accept='image/*' hidden />
                         {loading && (

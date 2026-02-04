@@ -5,6 +5,7 @@ import { useAppContext } from "../context/AppContext"
 import Input from "../components/ui/Input"
 import Button from '../components/ui/Button'
 import mockApi from '../assets/mockApi'
+import api from "../config/api"
 import { ageRanges, goalOptions } from '../assets/assets'
 import Slider from '../components/ui/Slider'
 const OnBoarding = () => {
@@ -17,7 +18,7 @@ const OnBoarding = () => {
         height: 0,
         goal: "maintain",
         dailyCalorieIntake: 2000,
-        dailyCalorieBurn: 400
+        dailyCalorieBurn: 400,
 
     })
     const updateFields = (field, value) => {
@@ -40,14 +41,20 @@ const OnBoarding = () => {
                 age: formData.age.toString(),
                 weight: formData.weight.toString(),
                 height: formData.height.toString(),
-                createdAt: new Date().toString(),
+                createdAt: new Date().toISOString(),
 
             }
-            localStorage.setItem("fittrack_onboarding_data", JSON.stringify(userData))
-            await mockApi.user.update(user?.id, userData)
-            toast.success("Onboarding completed successfully")
-            setOnBoardingCompleted(true)
-            fetchUser(user?.token || "")
+            localStorage.setItem("fittnessUser", JSON.stringify(userData))
+            try {
+                await api.put(`/api/users/${user?.id}`, userData)
+                toast.success("Onboarding completed successfully")
+                setOnBoardingCompleted(true)
+                fetchUser(user?.token || "")
+            } catch (error) {
+                console.log(error);
+                toast.error(error?.response?.data?.error?.message || error?.message)
+            }
+
 
         }
 

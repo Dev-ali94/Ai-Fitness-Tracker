@@ -1,5 +1,6 @@
 import React, { useState, useEffect, act } from 'react'
 import { useAppContext } from "../context/AppContext"
+import api from "../config/api"
 import Card from "../components/ui/Card"
 import Button, { } from "../components/ui/Button"
 import Input from "../components/ui/Input"
@@ -31,7 +32,7 @@ const ActivityLog = () => {
     const handelDurationChange = (val) => {
         const duration = Number(val)
         const activity = quickActivities.find(a => a.name === formData.name)
-        const calories = formData.calories
+        let calories = formData.calories
         if (activity) {
             calories = duration * activity.rate
         }
@@ -43,13 +44,13 @@ const ActivityLog = () => {
             toast.error("Plase enter valid data")
         }
         try {
-            const { data } = await mockApi.allActivities.create({ data: formData })
-            setActivity(prev => [...prev, data])
+            const { data } = await api.post("/api/activity-logs", { data: formData })
+            setAllActivities(prev => [...prev, data])
             setFormData({ name: "", duration: 0, calories: 0 })
             setShowForm(false)
         } catch (error) {
             console.log(error);
-            toast.error("Something want wrong")
+            toast.error(error?.response?.data?.error?.message || error?.message)
 
         }
     }
@@ -57,9 +58,11 @@ const ActivityLog = () => {
         try {
             const confirm = window.confirm("Are you sure you want to delete this Activity?")
             if (!confirm) return
-
+            await api.delete(`/api/activity-logs/${documentId}`)
+            setAllActivities((prev) => prev.filter((entry) => entry.documentId !== documentId))
         } catch (error) {
             console.log(error);
+            toast.error(error?.response?.data?.error?.message || error?.message)
         }
     }
     useEffect(() => {
